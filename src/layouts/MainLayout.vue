@@ -1,116 +1,87 @@
-<template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+<template lang="pug">
+q-layout(view="hHh Lpr lFf")
+  q-header(elevated)
+    q-toolbar
+      q-btn(flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer")
+      q-toolbar-title
+        | Support Ticketing System
+      div v1.0
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+  q-drawer(v-model="leftDrawerOpen" show-if-above bordered)
+    q-list.rounded-borders.text-primary(bordered padding)
+      q-item-label(header) Menu
+      q-item(
+        clickable
+        v-ripple
+        :active="true"
+        active-class="my-menu-link"
+        to="/"
+      )
+        q-item-section(avatar)
+          q-icon(name="data_info_alert")
+        q-item-section
+          | Meus Tickets
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
-    </q-header>
+      q-item(
+        clickable
+        v-ripple
+        @click="logout"
+        style="position: absolute; bottom: 0; width: 100%"
+      )
+        q-item-section(avatar)
+          q-icon(name="logout")
+        q-item-section
+          | Sair
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  q-page-container
+    router-view
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { useRouter } from 'vue-router'
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import { useQuasar } from 'quasar'
+
+import { useAuthStore } from 'src/stores/auth'
 
 export default defineComponent({
   name: 'MainLayout',
 
-  components: {
-    EssentialLink
-  },
+  components: {},
 
   setup () {
+    const Router = useRouter()
+    const $q = useQuasar()
+    const Auth = useAuthStore()
     const leftDrawerOpen = ref(false)
 
+    function logout () {
+      Auth.logout().then(status => {
+        if (status) {
+          $q.notify({
+            progress: true,
+            type: 'positive',
+            message: 'Você saiu com sucesso!'
+          })
+
+          Router.go()
+        }
+      })
+    }
     return {
-      essentialLinks: linksList,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      logout
     }
   }
 })
 </script>
+
+<style lang="sass">
+.my-menu-link
+  color: white
+  background: $primary
+</style>
