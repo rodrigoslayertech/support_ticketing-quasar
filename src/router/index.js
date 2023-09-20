@@ -10,8 +10,10 @@ import routes from './routes'
  * async/await or return a Promise which resolves
  * with the Router instance.
  */
+import { Notify } from 'quasar'
+import { useAuthStore } from 'stores/auth'
 
-export default route(function (/* { store, ssrContext } */) {
+export default route(function ({ store }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
@@ -24,6 +26,39 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
+  })
+
+  const AuthStore = useAuthStore(store)
+  Router.beforeEach(async (to, from, next) => {
+    await AuthStore.init().then((authenticated) => {
+      if (to.meta.requireAuth && !authenticated) {
+        next({ path: '/auth', query: { redirect: to.fullPath } })
+      } else if (to.path === '/auth' && authenticated) {
+        if (to.query.redirect) {
+          next({ path: to.query.redirect.toString() })
+        } else if (from.fullPath) {
+          next(from.fullPath)
+        } else {
+          next('/')
+        }
+
+        Notify.create({
+          type: 'positive',
+          position: 'center',
+          message: 'Você está logado!'
+        })
+      } else if (to.path === '/auth' && !authenticated) {
+        next()
+      } else {
+        next()
+      }
+
+      return true
+    }).catch(function (error) {
+      console.log(error)
+
+      next(false)
+    })
   })
 
   return Router
