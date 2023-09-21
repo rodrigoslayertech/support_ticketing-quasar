@@ -137,22 +137,15 @@ export default defineComponent({
     const ticketId = Route.params.id
     Ticket.get(ticketId).then(data => {
       const createdDate = new Date(data.created_at)
-      let updatedDate = null
-      if (data.created_at !== data.updated_at) {
-        updatedDate = new Date(data.updated_at)
-      } else {
-        data.updated_at = null
-      }
+      const updatedDate = new Date(data.updated_at)
 
       const dateCreated = createdDate.toLocaleDateString()
       const timeCreated = createdDate.toLocaleTimeString()
       data.created_at = `${dateCreated} às ${timeCreated}`
 
-      if (updatedDate) {
-        const dateUpdated = updatedDate.toLocaleDateString()
-        const timeUpdated = updatedDate.toLocaleTimeString()
-        data.updated_at = `${dateUpdated} às ${timeUpdated}`
-      }
+      const dateUpdated = updatedDate.toLocaleDateString()
+      const timeUpdated = updatedDate.toLocaleTimeString()
+      data.updated_at = `${dateUpdated} às ${timeUpdated}`
 
       ticket.value = data
     })
