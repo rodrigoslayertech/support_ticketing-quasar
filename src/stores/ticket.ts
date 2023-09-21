@@ -153,12 +153,8 @@ export const useTicketStore = defineStore('ticket', () => {
       return false
     })
   }
-  async function sendReply (reply: {ticket:number, reply:string, file:string}) {
-    return await api.post('/ticket/reply', {
-      ticket_id: reply.ticket,
-      reply: reply.reply,
-      file: reply.file
-    }, {
+  async function sendReply (formData:FormData) {
+    return await api.post('/ticket/reply', formData, {
       withCredentials: true
     }).then(response => {
       if (!response.data) {

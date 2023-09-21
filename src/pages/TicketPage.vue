@@ -37,6 +37,12 @@ q-page(style="max-width: 1200px; margin: auto;")
         div.text-caption Usuário: {{ reply.user_id }}
       .row.q-mb-md
         div {{ reply.reply }}
+      .row.q-mb-md(v-if="reply.file")
+        .text-caption (Arquivo anexado):
+          a.q-ml-xs(
+            target="_blank"
+            :href="api.defaults.baseURL + '/' + reply.file"
+          ) {{ api.defaults.baseURL + '/' + reply.file }}
       .row.justify-end
         .col.text-right(v-if="reply.updated_at")
           //-.text-caption Última atualização:
@@ -56,15 +62,15 @@ q-page(style="max-width: 1200px; margin: auto;")
     )
       template(v-slot:prepend)
         q-icon(name="quickreply")
-    //-q-input(
-      dense square outlined clearable
-      type="textarea" label="Digite uma descrição"
-      v-model="ticketInput.description"
-      :rules="ticketRules.description"
-      )
-      template(v-slot:prepend)
-        q-icon(name="description")
     .row.justify-end
+      q-file(
+        filled
+        v-model="ticketReplyInput.file"
+        label="Arquivo (opcional)"
+      )
+        template(v-slot:prepend)
+          q-icon(name="cloud_upload" @click.stop.prevent)
+      q-space
       q-btn.q-mr-md(
         no-caps
         @click="closeTicket"
@@ -108,7 +114,8 @@ export default defineComponent({
     const ticketScrollArea = ref(null)
     const ticketReplyForm = ref(null)
     const ticketReplyInput = ref({
-      reply: ''
+      reply: '',
+      file: ''
     })
     const ticketReplyRules = ref({
       reply: [
@@ -176,16 +183,25 @@ export default defineComponent({
           return false
         }
 
-        const Reply = {
-          ticket: ticketId,
-          ...ticketReplyInput.value
+        const formData = new FormData()
+        formData.append('ticket_id', ticketId)
+        formData.append('reply', ticketReplyInput.value.reply)
+        if (ticketReplyInput.value.file) {
+          formData.append('file', ticketReplyInput.value.file)
         }
-        Ticket.sendReply(Reply).then(Reply => {
+        Ticket.sendReply(formData).then(Reply => {
           // listTicketReplies()
 
           if (Reply.status === true) {
             ticketReplyStatus.value.reply.loading = false
             Router.go()
+          } else {
+            ticketReplyStatus.value.reply.loading = false
+            $q.notify({
+              type: 'negative',
+              timeout: 3500,
+              message: 'Algum erro ocorreu, tente novamente!'
+            })
           }
         })
       })
@@ -249,7 +265,7 @@ export default defineComponent({
   width: 100%
   padding: 15px
 .ticket-closed
-  height: calc(100vh - 285px)
+  height: calc(100vh - 305px)
 .ticket-non-closed
   height: calc(100vh - 50px)
 </style>

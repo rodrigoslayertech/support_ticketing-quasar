@@ -38,7 +38,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
       container
       style="max-height: 500px"
     )
-      q-header.bg-primary
+      q-header.bg-secondary
         q-toolbar
           q-toolbar-title Abra um ticket
           q-btn(flat v-close-popup round dense icon="close")
@@ -81,7 +81,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
               q-btn(
                 no-caps
                 @click="openTicket"
-                label="Criar ticket" color="negative" icon="how_to_reg"
+                label="Criar ticket" color="secondary" icon="add_circle"
                 :loading="ticketStatus.open.loading" :disable="ticketStatus.open.loading"
               )
                 template(v-slot:loading)
