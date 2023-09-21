@@ -31,7 +31,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
     q-layout.bg-white.text-dark(
       view="Lhh lpR fff"
       container
-      style="max-height: 400px"
+      style="max-height: 500px"
     )
       q-header.bg-primary
         q-toolbar
@@ -60,6 +60,17 @@ q-page(padding style="max-width: 1200px; margin: auto;")
             )
               template(v-slot:prepend)
                 q-icon(name="description")
+            q-file(
+              filled bottom-slots
+              v-model="ticketInput.file"
+              label="Arquivo (opcional)"
+              counter
+            )
+              template(v-slot:prepend)
+                q-icon(name="cloud_upload" @click.stop.prevent)
+              template(v-slot:append)
+                q-icon.cursor-pointer(name="close" @click.stop.prevent="model = null")
+              template(v-slot:hint)
 
             .row.justify-end
               q-btn(
@@ -147,7 +158,13 @@ export default defineComponent({
           return false
         }
 
-        Ticket.open(ticketInput.value).then(Ticket => {
+        const formData = new FormData()
+        formData.append('title', ticketInput.value.title)
+        formData.append('description', ticketInput.value.description)
+        if (ticketInput.value.file) {
+          formData.append('file', ticketInput.value.file)
+        }
+        Ticket.open(formData).then(Ticket => {
           // listTicket()
 
           if (Ticket?.id) {

@@ -78,11 +78,8 @@ export const useTicketStore = defineStore('ticket', () => {
       return false
     })
   }
-  async function open (data: { title:string, description:string }) {
-    return await api.post('/ticket/', {
-      title: data.title,
-      description: data.description
-    }, {
+  async function open (formData:FormData) {
+    return await api.post('/ticket/', formData, {
       withCredentials: true
     }).then(response => {
       if (!response.data) {

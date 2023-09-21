@@ -15,6 +15,11 @@ q-page(padding style="max-width: 1200px; margin: auto;")
 
     .row.q-mb-md
       div {{ ticket.description }}
+    .row.q-mb-md(v-if="ticket.file")
+      .text-caption (Arquivo anexado):
+        a.q-ml-xs(
+          :href="api.defaults.baseURL + '/' + ticket.file"
+        ) {{ api.defaults.baseURL + '/' + ticket.file }}
 
     .row.justify-end
       //-.col.text-left
@@ -84,6 +89,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
 import { defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { api } from 'boot/axios'
 
 import { useTicketStore } from 'src/stores/ticket'
 
@@ -220,6 +226,7 @@ export default defineComponent({
     }, 3000)
 
     return {
+      api,
       ticket,
       ticketReplies,
 
