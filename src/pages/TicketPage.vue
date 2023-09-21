@@ -1,7 +1,7 @@
 <template lang="pug">
-q-page(padding style="max-width: 1200px; margin: auto;")
-  q-scroll-area(
-    :class="ticket.status !== 'closed' ? 'ticketClosed' : 'ticketNonClosed'"
+q-page(style="max-width: 1200px; margin: auto;")
+  q-scroll-area.ticket-scrollarea(
+    :class="ticket.status !== 'closed' ? 'ticket-closed' : 'ticket-non-closed'"
     ref="ticketScrollArea"
   )
     .row.q-mb-md
@@ -18,6 +18,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
     .row.q-mb-md(v-if="ticket.file")
       .text-caption (Arquivo anexado):
         a.q-ml-xs(
+          target="_blank"
           :href="api.defaults.baseURL + '/' + ticket.file"
         ) {{ api.defaults.baseURL + '/' + ticket.file }}
 
@@ -35,15 +36,12 @@ q-page(padding style="max-width: 1200px; margin: auto;")
       .row.q-mb-md
         div {{ reply.reply }}
       .row.justify-end
-      //-.col.text-left
-        .text-caption Ticket criado em:
-        .text-caption {{ ticket.created_at }}
-      .col.text-right(v-if="reply.updated_at")
-        //-.text-caption Última atualização:
-        .text-caption {{ reply.updated_at }}
+        .col.text-right(v-if="reply.updated_at")
+          //-.text-caption Última atualização:
+          .text-caption {{ reply.updated_at }}
       q-separator(spaced="20px")
 
-  q-form.q-gutter-md(
+  q-form.q-gutter-md.q-pa-md(
     v-if="ticket.status && ticket.status !== 'closed'"
     @submit.prevent.stop="replyTicket"
     ref="ticketReplyForm"
@@ -245,10 +243,11 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.ticketClosed
-  height: calc(100vh - 300px)
+.ticket-scrollarea
   width: 100%
-.ticketNonClosed
-  height: calc(100vh - 100px)
-  width: 100%
+  padding: 15px
+.ticket-closed
+  height: calc(100vh - 285px)
+.ticket-non-closed
+  height: calc(100vh - 50px)
 </style>

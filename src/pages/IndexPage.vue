@@ -22,10 +22,15 @@ q-page(padding style="max-width: 1200px; margin: auto;")
         q-item-label {{ ticket.item.title }}
         q-item-label(caption lines="1") {{ ticket.item.description }}
       q-item-section(side top)
-        q-item-label.q-mb-sm(caption) {{ ticket.item.updated_at }}
-        q-badge(v-if="ticket.item.status === 'opened'" color="red") aberto
-        q-badge(v-else-if="ticket.item.status === 'in_progress'") em progresso
-        q-badge(v-else-if="ticket.item.status === 'closed'" color="green") fechado
+        q-item-label.q-mb-sm(caption) {{ ticket.item.updated_at }}\
+        .row
+          q-badge.q-mr-xs(color="yellow-6" text-color="black") {{ ticket.item.replies_count }}
+            q-tooltip Respostas a este ticket
+            q-icon.q-ml-xs(name="forum" size="14px")
+
+          q-badge(v-if="ticket.item.status === 'opened'" color="red") aberto
+          q-badge(v-else-if="ticket.item.status === 'in_progress'") em progresso
+          q-badge(v-else-if="ticket.item.status === 'closed'" color="green") fechado
 
   q-dialog(v-model="ticketDialog" persistent)
     q-layout.bg-white.text-dark(
