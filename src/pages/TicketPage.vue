@@ -222,7 +222,7 @@ export default defineComponent({
     getTicketReplies()
 
     setTimeout(() => {
-      ticketScrollArea.value.setScrollPercentage('vertical', 1.0, 200)
+      ticketScrollArea?.value?.setScrollPercentage('vertical', 1.0, 200)
     }, 3000)
 
     return {
