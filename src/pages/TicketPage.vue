@@ -34,6 +34,8 @@ q-page(style="max-width: 1200px; margin: auto;")
 
     div(v-for="reply in ticketReplies" :key="reply.id")
       .row.q-mb-md
+        div.text-caption Usuário: {{ reply.user_id }}
+      .row.q-mb-md
         div {{ reply.reply }}
       .row.justify-end
         .col.text-right(v-if="reply.updated_at")

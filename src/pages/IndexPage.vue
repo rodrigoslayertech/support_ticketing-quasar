@@ -22,7 +22,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
         q-item-label {{ ticket.item.title }}
         q-item-label(caption lines="1") {{ ticket.item.description }}
       q-item-section(side top)
-        q-item-label.q-mb-sm(caption) {{ ticket.item.updated_at }}\
+        q-item-label.q-mb-sm(caption) {{ ticket.item.updated_at }}
         .row
           q-badge.q-mr-xs(color="yellow-6" text-color="black") {{ ticket.item.replies_count }}
             q-tooltip Respostas a este ticket
