@@ -327,8 +327,8 @@ export default {
               case -2: // No connection or blocked request
                 this.$q.notify({
                   type: 'negative',
-                  timeout: 5000,
-                  message: 'Não há resposta de dados de login! A solicitação foi bloqueada ou não há acesso à Internet!'
+                  timeout: 7000,
+                  message: 'Não há resposta de dados de login! A solicitação foi bloqueada, o servidor está offline ou não há acesso à Internet!'
                 }); break
               case -1: // No response
                 this.$q.notify({
