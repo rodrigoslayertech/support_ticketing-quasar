@@ -20,7 +20,7 @@ q-layout(view="hHh Lpr lFf")
         q-item-section(avatar)
           q-icon(name="data_info_alert")
         q-item-section
-          | Meus Tickets
+          | {{ Auth.user.role === 'Client' ? 'Meus Tickets' : 'Tickets' }}
 
       q-item(
         clickable
@@ -70,6 +70,7 @@ export default defineComponent({
       })
     }
     return {
+      Auth,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value

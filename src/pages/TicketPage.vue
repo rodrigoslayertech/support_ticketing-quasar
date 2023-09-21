@@ -1,7 +1,7 @@
 <template lang="pug">
 q-page(padding style="max-width: 1200px; margin: auto;")
   q-scroll-area(
-    style="height: calc(100vh - 300px); width: 100%;"
+    :class="ticket.status !== 'closed' ? 'ticketClosed' : 'ticketNonClosed'"
     ref="ticketScrollArea"
   )
     .row.q-mb-md
@@ -39,6 +39,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
       q-separator(spaced="20px")
 
   q-form.q-gutter-md(
+    v-if="ticket.status && ticket.status !== 'closed'"
     @submit.prevent.stop="replyTicket"
     ref="ticketReplyForm"
   )
@@ -59,11 +60,21 @@ q-page(padding style="max-width: 1200px; margin: auto;")
       template(v-slot:prepend)
         q-icon(name="description")
     .row.justify-end
+      q-btn.q-mr-md(
+        no-caps
+        @click="closeTicket"
+        label="Fechar ticket" color="negative" icon="close"
+        :loading="ticketCloseStatus.close.loading"
+        :disable="ticketCloseStatus.close.loading"
+      )
+        template(v-slot:loading)
+          q-spinner-facebook
       q-btn(
         no-caps
         @click="replyTicket"
-        label="Responder ticket" color="negative" icon="quickreply"
-        :loading="ticketReplyStatus.reply.loading" :disable="ticketReplyStatus.reply.loading"
+        label="Responder ticket" color="primary" icon="quickreply"
+        :loading="ticketReplyStatus.reply.loading"
+        :disable="ticketReplyStatus.reply.loading"
       )
         template(v-slot:loading)
           q-spinner-facebook
@@ -72,6 +83,7 @@ q-page(padding style="max-width: 1200px; margin: auto;")
 <script>
 import { defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 
 import { useTicketStore } from 'src/stores/ticket'
 
@@ -81,6 +93,9 @@ export default defineComponent({
   setup () {
     const Route = useRoute()
     const Router = useRouter()
+
+    const $q = useQuasar()
+
     const Ticket = useTicketStore()
 
     const ticket = ref({})
@@ -96,6 +111,11 @@ export default defineComponent({
     })
     const ticketReplyStatus = ref({
       reply: {
+        loading: false
+      }
+    })
+    const ticketCloseStatus = ref({
+      close: {
         loading: false
       }
     })
@@ -166,6 +186,32 @@ export default defineComponent({
 
       return true
     }
+    function closeTicket () {
+      $q.dialog({
+        title: 'Confirmar',
+        message: 'Você gostaria mesmo de fechar o ticket?',
+        cancel: {
+          label: 'Não',
+          color: 'positive'
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative'
+        },
+        persistent: true
+      }).onOk(() => {
+        Ticket.close(ticket.value.id).then(response => {
+          console.log(response)
+
+          if (response.status === true) {
+            ticketCloseStatus.value.close.loading = false
+            Router.go()
+          }
+        })
+      })
+
+      return true
+    }
 
     getTicketReplies()
 
@@ -181,10 +227,21 @@ export default defineComponent({
       ticketReplyForm,
       ticketReplyInput,
       ticketReplyRules,
+      ticketCloseStatus,
       ticketReplyStatus,
 
-      replyTicket
+      replyTicket,
+      closeTicket
     }
   }
 })
 </script>
+
+<style lang="sass">
+.ticketClosed
+  height: calc(100vh - 300px)
+  width: 100%
+.ticketNonClosed
+  height: calc(100vh - 100px)
+  width: 100%
+</style>
